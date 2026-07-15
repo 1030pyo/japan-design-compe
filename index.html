@@ -126,6 +126,28 @@ footer a{color:#000}
 .calev.star{border-left-color:#e6a817}
 .calempty{padding:60px 24px;text-align:center;color:var(--muted);font-size:14px;border:1px solid var(--line);border-top:none}
 @media(max-width:560px){.wrap{padding:0 16px}.grid{grid-template-columns:1fr 1fr}.sort{margin-left:0}.calhead .calcount{width:100%;margin-left:0;order:3}}
+
+/* ---------- AI 추천 챗봇 ---------- */
+.ai-fab{position:fixed;right:20px;bottom:20px;z-index:50;background:#0a0a0a;color:#fff;border:none;border-radius:28px;height:52px;padding:0 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.18);display:flex;align-items:center;gap:8px}
+.ai-fab:hover{background:#222}
+.ai-modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center}
+.ai-modal.on{display:flex}
+.ai-panel{background:#fff;width:100%;max-width:560px;height:82vh;max-height:720px;border-radius:14px 14px 0 0;display:flex;flex-direction:column;overflow:hidden}
+@media(min-width:600px){.ai-modal{align-items:center}.ai-panel{border-radius:14px;height:78vh}}
+.ai-head{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.ai-head b{font-size:15px}
+.ai-head .x{border:none;background:none;font-size:24px;cursor:pointer;color:#888;line-height:1}
+.ai-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.ai-msg{font-size:14px;line-height:1.62;max-width:88%;word-break:break-word}
+.ai-msg.u{align-self:flex-end;background:#0a0a0a;color:#fff;padding:9px 13px;border-radius:14px 14px 3px 14px}
+.ai-msg.a{align-self:flex-start;color:#111}
+.ai-msg.a .ai-link{color:#0a0a0a;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.ai-hint{font-size:12.5px;color:var(--muted);text-align:center;padding:10px 6px;line-height:1.6}
+.ai-foot{border-top:1px solid var(--line);padding:12px 14px;display:flex;gap:8px}
+.ai-foot input{flex:1;border:1px solid var(--line);border-radius:20px;padding:10px 14px;font-family:inherit;font-size:14px;outline:none}
+.ai-foot input:focus{border-color:var(--line-strong)}
+.ai-foot button{border:none;background:#0a0a0a;color:#fff;border-radius:20px;padding:0 18px;font-family:inherit;font-weight:700;cursor:pointer}
+.ai-foot button:disabled{background:#bbb;cursor:default}
 </style>
 </head>
 <body>
@@ -187,6 +209,20 @@ footer a{color:#000}
     개인 열람용 · 원문 저작권은 각 공모전 주최 및 <a href="https://koubo.jp/contest/list?c=7" target="_blank" rel="noopener">koubo.jp</a>에 있습니다. 카드를 누르면 원문 상세페이지로 이동합니다.<br>
     이미지는 koubo 서버에서 직접 불러옵니다(인터넷 필요). 데이터는 <b>data.js</b>에 있으며, 새 공모전은 링크를 전달하면 추가하는 반자동 방식입니다.
   </footer>
+</div>
+
+<button class="ai-fab" id="aifab">🤖 AI 추천</button>
+<div class="ai-modal" id="aimodal">
+  <div class="ai-panel">
+    <div class="ai-head"><b>AI 공모전 추천</b><button class="x" id="aiclose" aria-label="닫기">×</button></div>
+    <div class="ai-body" id="aibody">
+      <div class="ai-hint">전공·관심 분야·조건(학생 여부·상금·마감 등)을 편하게 적어보세요.<br>예: "그래픽 디자인 전공 대학생인데 상금 큰 대회 추천해줘"</div>
+    </div>
+    <div class="ai-foot">
+      <input id="aiinput" type="text" placeholder="메시지 입력…" autocomplete="off">
+      <button id="aisend">전송</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -444,6 +480,70 @@ document.getElementById('calnext').addEventListener('click',()=>calShift(1));
 document.getElementById('caltoday').addEventListener('click',()=>{ calY=TODAY.getFullYear(); calM=TODAY.getMonth(); renderCalendar(); });
 
 render();
+
+// ---------- AI 추천 챗봇 ----------
+// ↓↓↓ Cloudflare Worker 배포 후, 그 주소를 여기에 붙여넣으세요 (예: https://event-ai.내계정.workers.dev)
+const AI_ENDPOINT = "";
+const AI_SYSTEM = `너는 일본 디자인 공모전 추천 도우미야. 아래 "공모전 목록"에서 사용자에게 가장 잘 맞는 공모전을 3~5개 골라 한국어로 추천해.
+- 각 줄은 "id|제목|카테고리|상금|마감(YYYY-MM-DD)|규모(大/中/小)|학생여부|주최" 형식이야.
+- 추천할 공모전은 반드시 [[id]] 형식으로 표기해 (예: [[k339114]]). 그래야 링크로 바뀐다.
+- 추천마다 왜 맞는지 한 줄 이유를 붙여.
+- 목록에 없는 공모전은 절대 지어내지 마. 조건에 맞는 게 없으면 솔직히 말해.
+- 답변은 간결하게. 마감 임박·상금·규모도 함께 고려해.`;
+
+let aiConvo=[];
+function aiItems(){ return DATA.map(d=>({...d,_dd:ddayInfo(d)})).filter(d=>d._dd.diff>0); }
+function aiContext(){
+  return aiItems().map(d=>{
+    const t=scaleTier(d).t, dt=d._dd.date;
+    const date=dt?`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`:'상시';
+    return `${d.id}|${d.utl?d.jp:d.ko}|${d.cat}|${d.prize||'-'}|${date}|${t}|${d.stu?'학생전용':'일반'}|${d.org||'-'}`;
+  }).join('\n');
+}
+const aimodal=document.getElementById('aimodal'), aibody=document.getElementById('aibody'),
+      aiinput=document.getElementById('aiinput'), aisend=document.getElementById('aisend');
+document.getElementById('aifab').addEventListener('click',()=>{aimodal.classList.add('on');aiinput.focus();});
+document.getElementById('aiclose').addEventListener('click',()=>aimodal.classList.remove('on'));
+aimodal.addEventListener('click',e=>{ if(e.target===aimodal) aimodal.classList.remove('on'); });
+
+function aiLink(text){
+  const map={}; DATA.forEach(d=>map[d.id]=d);
+  return esc(text).replace(/\[\[(k?\d+)\]\]/g,(m,id)=>{
+    const d=map[id]; if(!d) return '';
+    return `<a href="${esc(d.url)}" target="_blank" rel="noopener" class="ai-link">${esc(d.utl?d.jp:d.ko)}</a>`;
+  }).replace(/\n/g,'<br>');
+}
+function aiPush(role,html){
+  const div=document.createElement('div');
+  div.className='ai-msg '+(role==='user'?'u':'a');
+  div.innerHTML=html; aibody.appendChild(div); aibody.scrollTop=aibody.scrollHeight;
+  return div;
+}
+async function aiSend(){
+  const q=aiinput.value.trim(); if(!q) return;
+  if(!AI_ENDPOINT){ aiPush('a','⚠️ 아직 서버(Worker) 주소가 설정되지 않았어요. index.html의 <b>AI_ENDPOINT</b>를 배포한 Worker 주소로 바꿔주세요.'); aiinput.value=''; return; }
+  let pass=localStorage.getItem('ai_pass');
+  if(!pass){ pass=prompt('접속 암호를 입력하세요'); if(!pass) return; localStorage.setItem('ai_pass',pass); }
+  aiinput.value=''; aisend.disabled=true;
+  aiPush('user',esc(q));
+  aiConvo.push({role:'user',content:q});
+  const wait=aiPush('a','…추천 중');
+  try{
+    const r=await fetch(AI_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-App-Pass':pass},
+      body:JSON.stringify({ max_tokens:1024, system:AI_SYSTEM+'\n\n# 공모전 목록\n'+aiContext(), messages:aiConvo })
+    });
+    if(r.status===401){ localStorage.removeItem('ai_pass'); wait.innerHTML='⚠️ 암호가 틀렸어요. 다시 시도해주세요.'; aiConvo.pop(); aisend.disabled=false; return; }
+    const data=await r.json();
+    const txt=((data.content||[]).find(b=>b.type==='text')||{}).text || (data.error&&data.error.message) || '응답을 받지 못했어요.';
+    aiConvo.push({role:'assistant',content:txt});
+    wait.innerHTML=aiLink(txt);
+  }catch(err){ wait.innerHTML='⚠️ 연결 오류: '+esc(String(err.message||err)); }
+  aisend.disabled=false; aibody.scrollTop=aibody.scrollHeight;
+}
+aisend.addEventListener('click',aiSend);
+aiinput.addEventListener('keydown',e=>{ if(e.key==='Enter') aiSend(); });
 </script>
 </body>
 </html>
