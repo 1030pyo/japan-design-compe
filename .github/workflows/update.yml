@@ -1,0 +1,37 @@
+name: update-contests-data
+
+on:
+  schedule:
+    # 매일 00:00 UTC = 09:00 KST 에 실행
+    - cron: '0 0 * * *'
+  workflow_dispatch:   # 수동 실행 버튼
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run updater (koubo + 登竜門 스크래핑 → data.js)
+        run: python3 update.py
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.js last_update.txt
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "auto: 공모전 데이터 갱신 ($(date -u +%Y-%m-%d))"
+            git push
+          fi

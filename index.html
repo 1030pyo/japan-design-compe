@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>일본 디자인 공모전 (日本デザイン公募)</title>
+
+<style>
+/* ---------- Fonts (로컬 폴더) ---------- */
+@font-face{font-family:'LINE Seed KR';src:url('./font/LINE_SeedKR_2023.09.06/Web/woff2/LINESeedKR-Th.woff2') format('woff2');font-weight:300;font-display:swap}
+@font-face{font-family:'LINE Seed KR';src:url('./font/LINE_SeedKR_2023.09.06/Web/woff2/LINESeedKR-Rg.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'LINE Seed KR';src:url('./font/LINE_SeedKR_2023.09.06/Web/woff2/LINESeedKR-Bd.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'LINE Seed JP';src:url('./font/LINESeedJP_20241105/Web/WOFF2/LINESeedJP_OTF_Rg.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'LINE Seed JP';src:url('./font/LINESeedJP_20241105/Web/WOFF2/LINESeedJP_OTF_Bd.woff2') format('woff2');font-weight:700;font-display:swap}
+
+:root{--bg:#fff;--fg:#0a0a0a;--muted:#8a8a8a;--line:#e6e6e6;--line-strong:#111}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:'LINE Seed KR','LINE Seed JP',sans-serif;background:var(--bg);color:var(--fg);font-weight:400;line-height:1.55;letter-spacing:-.01em}
+.jp{font-family:'LINE Seed JP','LINE Seed KR',sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+
+header{border-bottom:1px solid var(--line-strong);padding:52px 0 26px}
+.eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+h1{font-size:clamp(28px,4.5vw,48px);font-weight:700;line-height:1.08;letter-spacing:-.02em}
+h1 .sub{display:block;font-size:clamp(14px,2vw,18px);font-weight:400;color:var(--muted);margin-top:12px;letter-spacing:0}
+.meta-row{display:flex;flex-wrap:wrap;gap:18px;align-items:baseline;margin-top:24px;font-size:13px;color:var(--muted)}
+.meta-row b{color:var(--fg);font-weight:700}
+
+.controls{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
+.controls .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.search{flex:1;min-width:220px}
+.search input{width:100%;border:1px solid var(--line);padding:11px 14px;font-family:inherit;font-size:14px;color:var(--fg);background:#fff;outline:none;transition:border-color .15s}
+.search input:focus{border-color:var(--line-strong)}
+.search input::placeholder{color:#b5b5b5}
+.sort{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.sort select{font-family:inherit;font-size:12.5px;border:1px solid var(--line);padding:8px 10px;background:#fff;color:#000;cursor:pointer;outline:none}
+.cattoggle{font-family:inherit;font-size:12.5px;color:#444;background:#fff;border:1px solid var(--line);padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.cattoggle:hover{border-color:var(--line-strong);color:#000}
+.cattoggle .arrow{transition:transform .18s;font-size:10px}
+.cattoggle.closed .arrow{transform:rotate(-90deg)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;padding:12px 0 2px}
+.chip{border:1px solid var(--line);background:#fff;color:#555;padding:7px 12px;font-family:inherit;font-size:12px;cursor:pointer;transition:all .12s;white-space:nowrap}
+.chip:hover{border-color:var(--line-strong);color:#000}
+.chip.on{background:#0a0a0a;color:#fff;border-color:#0a0a0a}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;border-left:1px solid var(--line);margin:20px 0 0}
+.pager{display:flex;justify-content:center;align-items:center;gap:6px;margin:26px 0 80px;flex-wrap:wrap}
+.pg{font-family:inherit;font-size:13px;min-width:34px;height:34px;border:1px solid var(--line);background:#fff;color:#333;cursor:pointer;padding:0 8px}
+.pg:hover:not(:disabled){border-color:var(--line-strong);color:#000}
+.pg.on{background:#0a0a0a;color:#fff;border-color:#0a0a0a;font-weight:700}
+.pg:disabled{color:#ccc;cursor:default}
+.pg-e{padding:0 4px;color:#aaa}
+.card{border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:background .15s}
+.card:hover{background:#fafafa}
+.card:hover .title-ko{text-decoration:underline;text-underline-offset:3px}
+.thumb{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#f2f2f2;border-bottom:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.card:hover .thumb img{transform:scale(1.03)}
+.thumb .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:repeating-linear-gradient(45deg,#f7f7f7 0 10px,#f2f2f2 10px 20px)}
+.thumb .ph .m{font-size:20px;font-weight:700;color:#d0d0d0;letter-spacing:.1em}
+.thumb .ph .t{font-size:11px;letter-spacing:.04em;color:#c2c2c2}
+.star{position:absolute;top:8px;right:8px;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:rgba(255,255,255,.92);color:#0a0a0a;font-size:16px;line-height:28px;text-align:center;cursor:pointer;padding:0;z-index:2;transition:transform .1s,background .15s}
+.star::before{content:'\2606'}
+.star.on::before{content:'\2605'}
+.star:hover{transform:scale(1.15);background:#fff}
+.star.on{border-color:#0a0a0a}
+
+.card-body{padding:18px 20px 18px;display:flex;flex-direction:column;flex:1}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.cat{font-size:10.5px;letter-spacing:.04em;color:#000;border:1px solid var(--line-strong);padding:3px 7px;white-space:nowrap}
+.dday{font-size:11.5px;font-weight:700;white-space:nowrap;padding:3px 8px;letter-spacing:.02em}
+.dday.urgent{background:#0a0a0a;color:#fff}
+.dday.normal{border:1px solid var(--line);color:#555}
+.dday.na{border:1px solid var(--line);color:#bbb}
+.title-ko{font-size:16px;font-weight:700;line-height:1.34;letter-spacing:-.02em;margin-bottom:6px}
+.title-jp{font-size:11.5px;color:var(--muted);line-height:1.45;margin-bottom:auto}
+.utl-tag{display:inline-block;font-size:10px;color:#999;border:1px solid var(--line);padding:1px 6px;letter-spacing:.02em}
+.card-foot{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px;font-size:12px}
+.row{display:flex;gap:8px}
+.row .k{color:var(--muted);min-width:40px;flex-shrink:0}
+.row .v{color:#111}
+.row .v .jp{color:#999;font-size:11px}
+.prize .v{font-weight:700}
+.row .v.src{color:#999;font-size:11px;letter-spacing:.02em}
+.seg{display:flex;border:1px solid var(--line)}
+.seg button{font-family:inherit;font-size:12px;padding:8px 12px;background:#fff;color:#666;border:none;border-right:1px solid var(--line);cursor:pointer}
+.seg button:last-child{border-right:none}
+.seg button.on{background:#0a0a0a;color:#fff}
+.toggle{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#444;cursor:pointer;white-space:nowrap;user-select:none}
+.toggle input{width:15px;height:15px;accent-color:#0a0a0a;cursor:pointer}
+.empty{grid-column:1/-1;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 24px;text-align:center;color:var(--muted);font-size:14px}
+footer{border-top:1px solid var(--line-strong);padding:30px 0 60px;font-size:12px;color:var(--muted);line-height:1.7}
+footer a{color:#000}
+@media(max-width:560px){.wrap{padding:0 16px}.grid{grid-template-columns:1fr 1fr}.sort{margin-left:0}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Japan Design Competitions · 개인용</div>
+    <h1>일본 디자인 공모전<span class="sub jp">日本デザイン公募 — 한국어 정리판</span></h1>
+    <div class="meta-row">
+      <span>출처 <b>koubo.jp</b> · <b>登竜門</b></span>
+      <span>수집 <b>2026.07.14</b></span>
+      <span>표시 <b id="count">0</b> / 전체 <b id="total">0</b>건</span>
+    </div>
+  </header>
+</div>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="search"><input id="q" type="text" placeholder="검색 — 제목·주최 (한국어/일본어)"></div>
+    <div class="seg" id="srcfilter">
+      <button data-src="전체" class="on">전체</button>
+      <button data-src="koubo">koubo</button>
+      <button data-src="登竜門">登竜門</button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="favonly"> ★ 관심 대회 <span id="favcount" style="opacity:.55"></span></label>
+    <label class="toggle"><input type="checkbox" id="hidestu" checked> 학생 전용 숨기기</label>
+    <div class="sort">
+      <label for="sort">정렬</label>
+      <select id="sort">
+        <option value="deadline">마감 임박순</option>
+        <option value="new">신규 등록순</option>
+        <option value="prize">상금 높은순</option>
+      </select>
+    </div>
+    <button class="cattoggle closed" id="cattoggle" aria-expanded="false">카테고리 <span class="arrow">▾</span></button>
+    <div class="chips" id="chips" style="width:100%;display:none"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <main class="grid" id="grid"></main>
+  <nav class="pager" id="pager"></nav>
+  <footer>
+    개인 열람용 · 원문 저작권은 각 공모전 주최 및 <a href="https://koubo.jp/contest/list?c=7" target="_blank" rel="noopener">koubo.jp</a>에 있습니다. 카드를 누르면 원문 상세페이지로 이동합니다.<br>
+    이미지는 koubo 서버에서 직접 불러옵니다(인터넷 필요). 데이터는 <b>data.js</b>에 있으며, 새 공모전은 링크를 전달하면 추가하는 반자동 방식입니다.
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const DATA = window.DATA || [];
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+
+function ddayInfo(o){
+  if(!o.m || !o.d) return {diff:9e9, label:"상시·미정", cls:"na", dateStr:"상시·미정"};
+  let y = o.y || TODAY.getFullYear();
+  let dt = new Date(y, o.m-1, o.d); dt.setHours(0,0,0,0);
+  if(!o.y && dt < TODAY){ dt = new Date(y+1, o.m-1, o.d); dt.setHours(0,0,0,0); }
+  const diff = Math.round((dt-TODAY)/86400000);
+  let label, cls;
+  if(diff < 0){ label="마감"; cls="na"; }
+  else if(diff===0){ label="D-DAY"; cls="urgent"; }
+  else { label="D-"+diff; cls = diff<=7 ? "urgent":"normal"; }
+  return {diff, label, cls, dateStr:`${dt.getMonth()+1}/${dt.getDate()} 마감`};
+}
+function prizeNum(p){ const m=(p||"").match(/([0-9,]+)만엔/); if(m) return parseInt(m[1].replace(/,/g,''))*10000;
+  const y=(p||"").match(/([0-9,]+)엔/); return y?parseInt(y[1].replace(/,/g,'')):0; }
+
+const grid=document.getElementById('grid'), chipsBox=document.getElementById('chips'), pager=document.getElementById('pager');
+const PAGE_SIZE=24;
+let page=1;
+let activeCat="전체", query="", sortBy="deadline", activeSrc="전체", hideStu=true, favOnly=false;
+function go(){page=1;render();}
+document.getElementById('total').textContent=DATA.filter(d=>ddayInfo(d).diff>0).length;
+document.getElementById('hidestu').addEventListener('change',e=>{hideStu=e.target.checked;go();});
+
+const FAV_KEY='event_favs';
+let favs=new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]'));
+function updateFavCount(){document.getElementById('favcount').textContent=favs.size?`(${favs.size})`:'';}
+updateFavCount();
+document.getElementById('favonly').addEventListener('change',e=>{favOnly=e.target.checked;go();});
+function toggleFav(id,btn){
+  if(favs.has(id)) favs.delete(id); else favs.add(id);
+  localStorage.setItem(FAV_KEY,JSON.stringify([...favs]));
+  updateFavCount();
+  if(favOnly){ render(); }
+  else if(btn){ btn.classList.toggle('on',favs.has(id)); }
+}
+grid.addEventListener('click',e=>{
+  const s=e.target.closest('.star');
+  if(s){ e.preventDefault(); e.stopPropagation(); toggleFav(s.dataset.id,s); }
+});
+
+const srcBox=document.getElementById('srcfilter');
+srcBox.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  activeSrc=b.dataset.src;
+  srcBox.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  go();
+}));
+
+const catCounts={};
+DATA.forEach(d=>catCounts[d.cat]=(catCounts[d.cat]||0)+1);
+const cats=["전체",...Object.keys(catCounts).sort((a,b)=>catCounts[b]-catCounts[a])];
+chipsBox.innerHTML=cats.map(c=>{
+  const n = c==="전체"?DATA.length:catCounts[c];
+  return `<button class="chip${c==='전체'?' on':''}" data-cat="${c}">${c} <span style="opacity:.5">${n}</span></button>`;
+}).join('');
+chipsBox.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{
+  activeCat=b.dataset.cat;
+  chipsBox.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===b));
+  go();
+}));
+const catToggle=document.getElementById('cattoggle');
+catToggle.addEventListener('click',()=>{
+  const open=chipsBox.style.display!=='none';
+  chipsBox.style.display=open?'none':'flex';
+  catToggle.classList.toggle('closed',open);
+  catToggle.setAttribute('aria-expanded',String(!open));
+});
+document.getElementById('q').addEventListener('input',e=>{query=e.target.value.trim().toLowerCase();go();});
+document.getElementById('sort').addEventListener('change',e=>{sortBy=e.target.value;go();});
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function imgFail(el){
+  const cat=el.getAttribute('data-cat')||'';
+  el.parentNode.innerHTML='<div class="ph"><span class="m">NO IMAGE</span><span class="t">'+esc(cat)+'</span></div>';
+}
+
+function render(){
+  let items=DATA.map(d=>({...d,_dd:ddayInfo(d)}));
+  items=items.filter(d=>d._dd.diff>0);   // 마감 지났거나 오늘 마감인 대회 제외
+  if(favOnly) items=items.filter(d=>favs.has(d.id));
+  else if(hideStu) items=items.filter(d=>!d.stu);
+  if(activeSrc!=="전체") items=items.filter(d=>d.src.indexOf(activeSrc)>=0);
+  if(activeCat!=="전체") items=items.filter(d=>d.cat===activeCat);
+  if(query) items=items.filter(d=>(d.ko+d.jp+(d.org||'')).toLowerCase().includes(query));
+  items.sort((a,b)=>{
+    if(sortBy==="prize") return prizeNum(b.prize)-prizeNum(a.prize);
+    if(sortBy==="new")   return (b.sortid||0)-(a.sortid||0);
+    return a._dd.diff-b._dd.diff;
+  });
+  const total=items.length;
+  document.getElementById('count').textContent=total;
+  const pages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(page>pages) page=pages;
+  if(page<1) page=1;
+  if(!total){ grid.innerHTML=`<div class="empty">조건에 맞는 공모전이 없습니다.</div>`; pager.innerHTML=''; return; }
+  const pageItems=items.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
+  grid.innerHTML=pageItems.map(d=>{
+    const dd=d._dd;
+    const ph=`<div class="ph"><span class="m">NO IMAGE</span><span class="t">${esc(d.cat)}</span></div>`;
+    const inner=d.img
+      ? `<img src="${esc(d.img)}" alt="${esc(d.ko)}" loading="lazy" data-cat="${esc(d.cat)}" onerror="imgFail(this)">`
+      : ph;
+    const star=`<button class="star${favs.has(d.id)?' on':''}" data-id="${esc(d.id)}" title="관심 공모전" aria-label="관심 공모전"></button>`;
+    const thumb=`<div class="thumb">${inner}${star}</div>`;
+    const org=d.org?`<div class="row"><span class="k">주최</span><span class="v jp">${esc(d.org)}</span></div>`:'';
+    const prize=d.prize?`<div class="row prize"><span class="k">상금</span><span class="v">${esc(d.prize)}</span></div>`:'';
+    return `<a class="card" href="${esc(d.url)}" target="_blank" rel="noopener">
+      ${thumb}
+      <div class="card-body">
+        <div class="card-top"><span class="cat">${esc(d.cat)}</span><span class="dday ${dd.cls}">${dd.label}</span></div>
+        ${d.utl
+          ? `<div class="title-ko jp">${esc(d.jp)}</div><div class="title-jp"><span class="utl-tag">日 번역 전</span></div>`
+          : `<div class="title-ko">${esc(d.ko)}</div><div class="title-jp jp">${esc(d.jp)}</div>`}
+        <div class="card-foot">
+          <div class="row"><span class="k">마감</span><span class="v">${dd.dateStr}</span></div>
+          ${prize}${org}
+          <div class="row"><span class="k">출처</span><span class="v src">${esc(d.src)}</span></div>
+        </div>
+      </div></a>`;
+  }).join('');
+  renderPager(pages);
+}
+
+function renderPager(pages){
+  if(pages<=1){ pager.innerHTML=''; return; }
+  const win=2, list=[];
+  for(let i=1;i<=pages;i++){
+    if(i===1||i===pages||Math.abs(i-page)<=win) list.push(i);
+    else if(list[list.length-1]!=='…') list.push('…');
+  }
+  let html=`<button class="pg" data-p="${page-1}" ${page<=1?'disabled':''}>‹</button>`;
+  list.forEach(i=> html+= i==='…'
+    ? `<span class="pg-e">…</span>`
+    : `<button class="pg${i===page?' on':''}" data-p="${i}">${i}</button>`);
+  html+=`<button class="pg" data-p="${page+1}" ${page>=pages?'disabled':''}>›</button>`;
+  pager.innerHTML=html;
+}
+pager.addEventListener('click',e=>{
+  const b=e.target.closest('.pg');
+  if(!b||b.disabled) return;
+  page=parseInt(b.dataset.p,10);
+  render();
+  document.querySelector('.controls').scrollIntoView();
+});
+
+render();
+</script>
+</body>
+</html>
