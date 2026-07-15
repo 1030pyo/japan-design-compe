@@ -80,8 +80,13 @@ h1 .sub{display:block;font-size:clamp(14px,2vw,18px);font-weight:400;color:var(-
 .row{display:flex;gap:8px}
 .row .k{color:var(--muted);min-width:40px;flex-shrink:0}
 .row .v{color:#111}
+.card-foot .v{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row .v .jp{color:#999;font-size:11px}
 .prize .v{font-weight:700}
+.tier{display:inline-block;font-size:10.5px;font-weight:700;line-height:1;padding:3px 7px;border:1px solid var(--line-strong)}
+.tier.lg{background:#0a0a0a;color:#fff;border-color:#0a0a0a}
+.tier.md{background:#fff;color:#0a0a0a}
+.tier.sm{color:#aaa;border-color:var(--line)}
 .row .v.src{color:#999;font-size:11px;letter-spacing:.02em}
 .seg{display:flex;border:1px solid var(--line)}
 .seg button{font-family:inherit;font-size:12px;padding:8px 12px;background:#fff;color:#666;border:none;border-right:1px solid var(--line);cursor:pointer}
@@ -92,7 +97,35 @@ h1 .sub{display:block;font-size:clamp(14px,2vw,18px);font-weight:400;color:var(-
 .empty{grid-column:1/-1;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 24px;text-align:center;color:var(--muted);font-size:14px}
 footer{border-top:1px solid var(--line-strong);padding:30px 0 60px;font-size:12px;color:var(--muted);line-height:1.7}
 footer a{color:#000}
-@media(max-width:560px){.wrap{padding:0 16px}.grid{grid-template-columns:1fr 1fr}.sort{margin-left:0}}
+/* ---------- 뷰 전환 · 달력 ---------- */
+.viewtoggle{font-family:inherit;font-size:12.5px;color:#444;background:#fff;border:1px solid var(--line);padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.viewtoggle:hover{border-color:var(--line-strong);color:#000}
+.viewtoggle.on{background:#0a0a0a;color:#fff;border-color:#0a0a0a}
+
+.calwrap{margin:20px 0 80px}
+.calhead{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.calhead .callabel{font-size:18px;font-weight:700;letter-spacing:-.01em;min-width:118px;text-align:center}
+.calhead button{font-family:inherit;font-size:13px;border:1px solid var(--line);background:#fff;color:#333;cursor:pointer;height:34px;padding:0 12px}
+.calhead button:hover{border-color:var(--line-strong);color:#000}
+.calhead .calnav{min-width:34px;padding:0}
+.calhead .calcount{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.calscroll{overflow-x:auto}
+.caldow{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line);min-width:680px}
+.caldow span{padding:8px 6px;font-size:11px;letter-spacing:.05em;color:var(--muted);text-align:center;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafafa}
+.caldow span.sun{color:#c0392b}.caldow span.sat{color:#2c6ea3}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);min-width:680px}
+.calcell{min-height:106px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px 6px 8px;display:flex;flex-direction:column;gap:3px;background:#fff}
+.calcell.out{background:#fafafa}
+.calcell .dnum{font-size:12px;color:#555;font-weight:700;margin-bottom:2px;align-self:flex-start}
+.calcell .dnum.sun{color:#c0392b}.calcell .dnum.sat{color:#2c6ea3}
+.calcell.out .dnum{color:#c8c8c8}
+.calcell.today .dnum{background:#0a0a0a;color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.calev{font-size:10.5px;line-height:1.32;padding:3px 6px;border:1px solid var(--line);border-left:3px solid #b5b5b5;color:#222;text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .12s}
+.calev:hover{background:#f2f2f2;border-left-color:#0a0a0a}
+.calev.urgent{border-left-color:#0a0a0a;background:#fafafa;font-weight:700}
+.calev.star{border-left-color:#e6a817}
+.calempty{padding:60px 24px;text-align:center;color:var(--muted);font-size:14px;border:1px solid var(--line);border-top:none}
+@media(max-width:560px){.wrap{padding:0 16px}.grid{grid-template-columns:1fr 1fr}.sort{margin-left:0}.calhead .calcount{width:100%;margin-left:0;order:3}}
 </style>
 </head>
 <body>
@@ -125,8 +158,10 @@ footer a{color:#000}
         <option value="deadline">마감 임박순</option>
         <option value="new">신규 등록순</option>
         <option value="prize">상금 높은순</option>
+        <option value="scale">규모 큰순</option>
       </select>
     </div>
+    <button class="viewtoggle" id="viewtoggle" title="달력으로 보기">📅 달력</button>
     <button class="cattoggle closed" id="cattoggle" aria-expanded="false">카테고리 <span class="arrow">▾</span></button>
     <div class="chips" id="chips" style="width:100%;display:none"></div>
   </div>
@@ -134,6 +169,19 @@ footer a{color:#000}
 
 <div class="wrap">
   <main class="grid" id="grid"></main>
+  <div class="calwrap" id="calwrap" style="display:none">
+    <div class="calhead">
+      <button class="calnav" id="calprev" aria-label="이전 달">‹</button>
+      <div class="callabel" id="callabel"></div>
+      <button class="calnav" id="calnext" aria-label="다음 달">›</button>
+      <button id="caltoday">오늘</button>
+      <span class="calcount" id="calcount"></span>
+    </div>
+    <div class="calscroll">
+      <div class="caldow"><span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span></div>
+      <div class="calgrid" id="calgrid"></div>
+    </div>
+  </div>
   <nav class="pager" id="pager"></nav>
   <footer>
     개인 열람용 · 원문 저작권은 각 공모전 주최 및 <a href="https://koubo.jp/contest/list?c=7" target="_blank" rel="noopener">koubo.jp</a>에 있습니다. 카드를 누르면 원문 상세페이지로 이동합니다.<br>
@@ -150,7 +198,7 @@ const DATA = window.DATA || [];
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 
 function ddayInfo(o){
-  if(!o.m || !o.d) return {diff:9e9, label:"상시·미정", cls:"na", dateStr:"상시·미정"};
+  if(!o.m || !o.d) return {diff:9e9, label:"상시·미정", cls:"na", dateStr:"상시·미정", date:null};
   let y = o.y || TODAY.getFullYear();
   let dt = new Date(y, o.m-1, o.d); dt.setHours(0,0,0,0);
   if(!o.y && dt < TODAY){ dt = new Date(y+1, o.m-1, o.d); dt.setHours(0,0,0,0); }
@@ -159,16 +207,42 @@ function ddayInfo(o){
   if(diff < 0){ label="마감"; cls="na"; }
   else if(diff===0){ label="D-DAY"; cls="urgent"; }
   else { label="D-"+diff; cls = diff<=7 ? "urgent":"normal"; }
-  return {diff, label, cls, dateStr:`${dt.getMonth()+1}/${dt.getDate()} 마감`};
+  return {diff, label, cls, dateStr:`${dt.getMonth()+1}/${dt.getDate()} 마감`, date:dt};
 }
 function prizeNum(p){ const m=(p||"").match(/([0-9,]+)만엔/); if(m) return parseInt(m[1].replace(/,/g,''))*10000;
   const y=(p||"").match(/([0-9,]+)엔/); return y?parseInt(y[1].replace(/,/g,'')):0; }
+
+// ---------- 대회 규모(복합 점수) ----------
+// 상금 60% + 주최 유형 30% + 상 종류 수 10% → 0~100점. 大(≥70)/中(45~70)/小(<45)
+function prizeScore(p){
+  const a=prizeNum(p);
+  if(a>0) return Math.max(0,Math.min(100,(Math.log10(a)-2.7)/(7-2.7)*100)); // 500엔~1000만엔 로그 정규화
+  if(/채용|완제품|제품화|상품화/.test(p||'')) return 40;   // 작품 채용 등 실질 기회
+  if(/상세|참조/.test(p||'')) return 25;                    // 미정 — 중립 하한
+  return 12;                                                // 상장·표창·기념품·도서카드 등
+}
+function orgScore(o){ o=o||'';
+  if(/財団|機構|省|庁|振興/.test(o) || (/[県都道府]/.test(o)&&!/大学/.test(o))) return 100; // 지자체·대형재단·공공
+  if(/株式会社|新聞|放送|テレビ|出版/.test(o)) return 75;                                    // 대기업·미디어
+  if(/協会|連盟|組合|実行委員会|[市区町村]/.test(o)&&!/大学/.test(o)) return 55;             // 협회·실행위·시정촌
+  if(/大学/.test(o)) return 35;                                                              // 대학
+  return 20;                                                                                 // 전문학교·개인·기타
+}
+function awardCntScore(p){ p=p||'';
+  const nums=(p.match(/[0-9,]+\s*만?엔/g)||[]).length;
+  const kw=(p.match(/가작|준우승|입선|특별상|우수상/g)||[]).length;
+  return Math.min(100,(Math.max(nums,1)+kw)*25);
+}
+function scaleScore(d){ return 0.6*prizeScore(d.prize)+0.3*orgScore(d.org)+0.1*awardCntScore(d.prize); }
+function scaleTier(d){ const s=scaleScore(d); return s>=70?{t:'大',c:'lg'}:s>=45?{t:'中',c:'md'}:{t:'小',c:'sm'}; }
 
 const grid=document.getElementById('grid'), chipsBox=document.getElementById('chips'), pager=document.getElementById('pager');
 const PAGE_SIZE=24;
 let page=1;
 let activeCat="전체", query="", sortBy="deadline", activeSrc="전체", hideStu=true, favOnly=false;
-function go(){page=1;render();}
+let view="grid", calY=TODAY.getFullYear(), calM=TODAY.getMonth();
+function refresh(){ view==="calendar" ? renderCalendar() : render(); }
+function go(){page=1;refresh();}
 document.getElementById('total').textContent=DATA.filter(d=>ddayInfo(d).diff>0).length;
 document.getElementById('hidestu').addEventListener('change',e=>{hideStu=e.target.checked;go();});
 
@@ -188,7 +262,7 @@ if(window.FIREBASE_CONFIG && window.firebase){
       const v=snap.val()||{};
       favs=new Set(Object.keys(v));
       updateFavCount();
-      render();
+      refresh();
     });
   }catch(err){ console.warn('Firebase 연결 실패 → 로컬 저장으로 대체', err); favDB=null; }
 }
@@ -244,7 +318,8 @@ function imgFail(el){
   el.parentNode.innerHTML='<div class="ph"><span class="m">NO IMAGE</span><span class="t">'+esc(cat)+'</span></div>';
 }
 
-function render(){
+// 검색·필터만 적용한 목록 (목록·달력 뷰 공용)
+function computeItems(){
   let items=DATA.map(d=>({...d,_dd:ddayInfo(d)}));
   items=items.filter(d=>d._dd.diff>0);   // 마감 지났거나 오늘 마감인 대회 제외
   if(favOnly) items=items.filter(d=>favs.has(d.id));
@@ -252,8 +327,14 @@ function render(){
   if(activeSrc!=="전체") items=items.filter(d=>d.src.indexOf(activeSrc)>=0);
   if(activeCat!=="전체") items=items.filter(d=>d.cat===activeCat);
   if(query) items=items.filter(d=>(d.ko+d.jp+(d.org||'')).toLowerCase().includes(query));
+  return items;
+}
+
+function render(){
+  let items=computeItems();
   items.sort((a,b)=>{
     if(sortBy==="prize") return prizeNum(b.prize)-prizeNum(a.prize);
+    if(sortBy==="scale") return scaleScore(b)-scaleScore(a);
     if(sortBy==="new")   return (b.sortid||0)-(a.sortid||0);
     return a._dd.diff-b._dd.diff;
   });
@@ -272,8 +353,10 @@ function render(){
       : ph;
     const star=`<button class="star${favs.has(d.id)?' on':''}" data-id="${esc(d.id)}" title="관심 공모전" aria-label="관심 공모전"></button>`;
     const thumb=`<div class="thumb">${inner}${star}</div>`;
-    const org=d.org?`<div class="row"><span class="k">주최</span><span class="v jp">${esc(d.org)}</span></div>`:'';
-    const prize=d.prize?`<div class="row prize"><span class="k">상금</span><span class="v">${esc(d.prize)}</span></div>`:'';
+    const org=`<div class="row"><span class="k">주최</span><span class="v jp" title="${esc(d.org||'')}">${esc(d.org||'—')}</span></div>`;
+    const prize=`<div class="row prize"><span class="k">상금</span><span class="v">${esc(d.prize||'—')}</span></div>`;
+    const tier=scaleTier(d);
+    const scaleRow=`<div class="row"><span class="k">규모</span><span class="v"><span class="tier ${tier.c}">${tier.t}</span></span></div>`;
     return `<a class="card" href="${esc(d.url)}" target="_blank" rel="noopener">
       ${thumb}
       <div class="card-body">
@@ -283,7 +366,7 @@ function render(){
           : `<div class="title-ko">${esc(d.ko)}</div><div class="title-jp jp">${esc(d.jp)}</div>`}
         <div class="card-foot">
           <div class="row"><span class="k">마감</span><span class="v">${dd.dateStr}</span></div>
-          ${prize}${org}
+          ${prize}${scaleRow}${org}
           <div class="row"><span class="k">출처</span><span class="v src">${esc(d.src)}</span></div>
         </div>
       </div></a>`;
@@ -312,6 +395,53 @@ pager.addEventListener('click',e=>{
   render();
   document.querySelector('.controls').scrollIntoView();
 });
+
+// ---------- 달력 뷰 ----------
+function renderCalendar(){
+  const items=computeItems().filter(d=>d._dd.date);   // 마감일 있는 것만
+  const byDay={};
+  items.forEach(d=>{ const t=d._dd.date; const k=t.getFullYear()+'-'+t.getMonth()+'-'+t.getDate(); (byDay[k]=byDay[k]||[]).push(d); });
+
+  document.getElementById('callabel').textContent=`${calY}년 ${calM+1}월`;
+  const monthCount=items.filter(d=>d._dd.date.getFullYear()===calY&&d._dd.date.getMonth()===calM).length;
+  document.getElementById('calcount').textContent=`이 달 마감 ${monthCount}건`;
+
+  const first=new Date(calY,calM,1), startDow=first.getDay();
+  const daysInMonth=new Date(calY,calM+1,0).getDate();
+  const gridStart=new Date(calY,calM,1-startDow);
+  const totalCells=Math.ceil((startDow+daysInMonth)/7)*7;
+  let html='';
+  for(let i=0;i<totalCells;i++){
+    const dt=new Date(gridStart); dt.setDate(gridStart.getDate()+i); dt.setHours(0,0,0,0);
+    const inMonth=dt.getMonth()===calM, isToday=dt.getTime()===TODAY.getTime(), dow=dt.getDay();
+    const dowCls=dow===0?'sun':dow===6?'sat':'';
+    const evs=byDay[dt.getFullYear()+'-'+dt.getMonth()+'-'+dt.getDate()]||[];
+    const evHtml=evs.map(d=>{
+      const title=d.utl?d.jp:d.ko;
+      const cls=(d._dd.cls==='urgent'?' urgent':'')+(favs.has(d.id)?' star':'');
+      return `<a class="calev${cls}" href="${esc(d.url)}" target="_blank" rel="noopener" title="${esc(title)}${d.prize?' · '+esc(d.prize):''} · ${esc(d.cat)}">${esc(title)}</a>`;
+    }).join('');
+    html+=`<div class="calcell${inMonth?'':' out'}${isToday?' today':''}"><span class="dnum ${dowCls}">${dt.getDate()}</span>${evHtml}</div>`;
+  }
+  document.getElementById('calgrid').innerHTML=html;
+}
+
+const viewBtn=document.getElementById('viewtoggle');
+function applyView(){
+  const cal=view==='calendar';
+  document.getElementById('calwrap').style.display=cal?'block':'none';
+  grid.style.display=cal?'none':'grid';
+  pager.style.display=cal?'none':'flex';
+  viewBtn.classList.toggle('on',cal);
+  viewBtn.innerHTML=cal?'▤ 목록':'📅 달력';
+  viewBtn.title=cal?'목록으로 보기':'달력으로 보기';
+  refresh();
+}
+viewBtn.addEventListener('click',()=>{ view=view==='calendar'?'grid':'calendar'; applyView(); });
+function calShift(n){ calM+=n; if(calM<0){calM=11;calY--;} if(calM>11){calM=0;calY++;} renderCalendar(); }
+document.getElementById('calprev').addEventListener('click',()=>calShift(-1));
+document.getElementById('calnext').addEventListener('click',()=>calShift(1));
+document.getElementById('caltoday').addEventListener('click',()=>{ calY=TODAY.getFullYear(); calM=TODAY.getMonth(); renderCalendar(); });
 
 render();
 </script>
