@@ -141,6 +141,9 @@ footer a{color:#000}
   </footer>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="data.js"></script>
 <script>
 const DATA = window.DATA || [];
@@ -171,15 +174,35 @@ document.getElementById('hidestu').addEventListener('change',e=>{hideStu=e.targe
 
 const FAV_KEY='event_favs';
 let favs=new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]'));
+let favDB=null;   // Firebase 실시간 DB (설정 있으면 활성화)
 function updateFavCount(){document.getElementById('favcount').textContent=favs.size?`(${favs.size})`:'';}
 updateFavCount();
 document.getElementById('favonly').addEventListener('change',e=>{favOnly=e.target.checked;go();});
+
+// ── 관심 대회: Firebase 설정이 있으면 실시간 공유, 없으면 이 브라우저에만 저장 ──
+if(window.FIREBASE_CONFIG && window.firebase){
+  try{
+    firebase.initializeApp(window.FIREBASE_CONFIG);
+    favDB=firebase.database().ref('favorites');
+    favDB.on('value',snap=>{             // 누군가 별표를 바꾸면 모든 기기에 실시간 반영
+      const v=snap.val()||{};
+      favs=new Set(Object.keys(v));
+      updateFavCount();
+      render();
+    });
+  }catch(err){ console.warn('Firebase 연결 실패 → 로컬 저장으로 대체', err); favDB=null; }
+}
+
 function toggleFav(id,btn){
-  if(favs.has(id)) favs.delete(id); else favs.add(id);
-  localStorage.setItem(FAV_KEY,JSON.stringify([...favs]));
-  updateFavCount();
-  if(favOnly){ render(); }
-  else if(btn){ btn.classList.toggle('on',favs.has(id)); }
+  const on=!favs.has(id);
+  if(favDB){
+    if(on) favDB.child(id).set(true); else favDB.child(id).remove();  // 화면은 value 리스너가 갱신
+  }else{
+    if(on) favs.add(id); else favs.delete(id);
+    localStorage.setItem(FAV_KEY,JSON.stringify([...favs]));
+    updateFavCount();
+    if(favOnly) render(); else if(btn) btn.classList.toggle('on',on);
+  }
 }
 grid.addEventListener('click',e=>{
   const s=e.target.closest('.star');
