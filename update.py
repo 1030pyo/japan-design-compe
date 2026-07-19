@@ -220,7 +220,8 @@ def main():
             "stu": is_student_only(x.get("qual_jp",""), x["title_jp"]),
             "utl": iid not in cache})
 
-    js = "window.DATA = " + json.dumps(out, ensure_ascii=False, separators=(",", ":")) + ";\n"
+    js = ('window.DATA_UPDATED = "' + time.strftime("%Y.%m.%d") + '";\n'
+          + "window.DATA = " + json.dumps(out, ensure_ascii=False, separators=(",", ":")) + ";\n")
     open(os.path.join(HERE, "data.js"), "w", encoding="utf-8").write(js)
     untranslated = sum(1 for o in out if o["utl"])
     log(f"✅ data.js 갱신: {len(out)}건 (koubo {len(koubo)} + 登竜門 {len(toryu_uniq)}), 미번역 {untranslated}건")

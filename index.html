@@ -158,7 +158,7 @@ footer a{color:#000}
     <h1>일본 디자인 공모전<span class="sub jp">日本デザイン公募 — 한국어 정리판</span></h1>
     <div class="meta-row">
       <span>출처 <b>koubo.jp</b> · <b>登竜門</b></span>
-      <span>수집 <b>2026.07.14</b></span>
+      <span>수집 <b id="updated">2026.07.14</b></span>
       <span>표시 <b id="count">0</b> / 전체 <b id="total">0</b>건</span>
     </div>
   </header>
@@ -231,6 +231,7 @@ footer a{color:#000}
 <script src="data.js"></script>
 <script>
 const DATA = window.DATA || [];
+if(window.DATA_UPDATED) document.getElementById('updated').textContent = window.DATA_UPDATED;
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 
 function ddayInfo(o){
