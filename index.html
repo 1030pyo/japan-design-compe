@@ -97,6 +97,24 @@ h1 .sub{display:block;font-size:clamp(14px,2vw,18px);font-weight:400;color:var(-
 .empty{grid-column:1/-1;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 24px;text-align:center;color:var(--muted);font-size:14px}
 footer{border-top:1px solid var(--line-strong);padding:30px 0 60px;font-size:12px;color:var(--muted);line-height:1.7}
 footer a{color:#000}
+/* ---------- 대표 공모전 고정 섹션 ---------- */
+.featured{border-bottom:1px solid var(--line);background:#fafafa;padding:22px 0 26px}
+.featured .flabel{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.featured h2{font-size:16px;font-weight:700;letter-spacing:-.01em;line-height:1.35}
+.featured .fnote{font-size:11px;color:var(--muted);margin:3px 0 15px}
+.fgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.fcard{display:flex;flex-direction:column;gap:7px;border:1px solid var(--line);background:#fff;padding:13px 13px 14px;text-decoration:none;color:inherit;transition:border-color .15s}
+.fcard:hover{border-color:var(--line-strong)}
+.fst{align-self:flex-start;font-size:10.5px;font-weight:700;letter-spacing:.02em;padding:3px 8px}
+.fst.open{background:#0a7d3b;color:#fff}
+.fst.part{background:#e6a817;color:#0a0a0a}
+.fst.closed{background:#ececec;color:#8a8a8a}
+.fst.none{border:1px solid var(--line);color:#999}
+.fcard .fname{font-size:13.5px;font-weight:700;line-height:1.3}
+.fcard .fjp{font-size:11px;color:var(--muted);line-height:1.4}
+.fcard .fdet{margin-top:auto;padding-top:4px;font-size:11px;color:#555;line-height:1.45}
+@media(max-width:900px){.fgrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.fgrid{grid-template-columns:repeat(2,1fr)}}
 /* ---------- 뷰 전환 · 달력 ---------- */
 .viewtoggle{font-family:inherit;font-size:12.5px;color:#444;background:#fff;border:1px solid var(--line);padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .viewtoggle:hover{border-color:var(--line-strong);color:#000}
@@ -162,6 +180,46 @@ footer a{color:#000}
       <span>표시 <b id="count">0</b> / 전체 <b id="total">0</b>건</span>
     </div>
   </header>
+</div>
+
+<div class="featured">
+  <div class="wrap">
+    <div class="flabel">Featured · 대표 대규모 공모전</div>
+    <h2>일본·도쿄를 대표하는 디자인 어워드</h2>
+    <div class="fnote">상태 기준일 2026.07.19 · 마감일이 지나면 자동으로 바뀌지 않으니 참고용입니다.</div>
+    <div class="fgrid">
+      <a class="fcard" href="https://www.g-mark.org/" target="_blank" rel="noopener">
+        <span class="fst closed">모집 마감</span>
+        <span class="fname">Good Design Award</span>
+        <span class="fjp jp">グッドデザイン賞 / G Mark</span>
+        <span class="fdet">응모 4/1~5/21 마감 · 결과 10/15 발표</span>
+      </a>
+      <a class="fcard" href="https://tokyotypedirectorsclub.org/entry/" target="_blank" rel="noopener">
+        <span class="fst open">모집중</span>
+        <span class="fname">Tokyo TDC Annual Awards 2027</span>
+        <span class="fjp jp">東京TDC賞 · 타입디렉터스클럽</span>
+        <span class="fdet">조기접수 ~8/15 · 본접수 ~9/15</span>
+      </a>
+      <a class="fcard" href="https://www.tokyoadc.com/new/" target="_blank" rel="noopener">
+        <span class="fst closed">모집 마감</span>
+        <span class="fname">Tokyo ADC Award 2026</span>
+        <span class="fjp jp">東京ADC賞 · 아트디렉터스클럽</span>
+        <span class="fdet">응모 5/11~6/4 마감</span>
+      </a>
+      <a class="fcard" href="https://www.jagda.or.jp/" target="_blank" rel="noopener">
+        <span class="fst part">일부 모집중</span>
+        <span class="fname">JAGDA</span>
+        <span class="fjp jp">日本그래픽디자이너협회</span>
+        <span class="fdet">국제학생포스터어워드 ~7/31 (학생 한정)</span>
+      </a>
+      <a class="fcard" href="https://mainichi.jp/" target="_blank" rel="noopener">
+        <span class="fst none">공모 없음</span>
+        <span class="fname">毎日デザイン賞</span>
+        <span class="fjp jp">마이니치 디자인상</span>
+        <span class="fdet">공개 응모 없음 · 추천·선정 방식</span>
+      </a>
+    </div>
+  </div>
 </div>
 
 <div class="controls">
